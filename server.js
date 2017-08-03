@@ -7,7 +7,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 var mysql = require('mysql');
-
+var pool = mysql.createPool({
+    host: 'localhost',
+    user: 'cs290_garouttc',
+    password: 'RottenDrubs79',
+    database: 'cs290_garouttc'
+});
 
 app.set('port', 3000);
 
