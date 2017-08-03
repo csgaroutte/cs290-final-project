@@ -1,5 +1,5 @@
 "use strict";
-var host = "http://localhost:3000/new";
+var host = "/new";
 
 window.addEventListener("load", function(){
     document.querySelector("#newExerciseForm").addEventListener("submit", function(event){

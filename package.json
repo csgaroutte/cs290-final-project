@@ -1,7 +1,5 @@
 {
-  "name": "Chris Garoutte",
-  "title": "CS290 Final Project",
-  "term": "Summer '17",
+  "name": "CS290-Final-Project",
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3",

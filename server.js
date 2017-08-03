@@ -14,7 +14,7 @@ var pool = mysql.createPool({
     database: 'cs290_garouttc'
 });
 
-app.set('port', 3000);
+app.set('port', 50918);
 
 app.get("/new", function(req, res){
     console.log("GOT A REQUEST");
@@ -22,4 +22,8 @@ app.get("/new", function(req, res){
 });
 
 
-app.listen(app.get('port'));
+app.listen(app.get('port'), function(){
+	console.log("Express started on port:" + app.get('port') + 
+	"; press Ctrl-C to terminate.");
+});
+
