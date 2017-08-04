@@ -14,11 +14,14 @@ app.use(bodyParser.json());
 
 var mysql = require('mysql');
 var pool = mysql.createPool({
-    host: 'localhost',
+    connectionLimit: 10,
+    host: 'classmysql.engr.oregonstate.edu',
     user: 'cs290_garouttc',
     password: 'RottenDrubs79',
     database: 'cs290_garouttc'
 });
+
+
 app.set('port', 50918);
 
 app.get("/", function(req, res){
@@ -44,7 +47,7 @@ app.get('/reset-table',function(req,res,next){
 
 app.post("/new", function(req, res){
     var context = {};
-    mysql.pool.query("INSERT INTO workouts VALUES(?)", [req.body.exercise,
+    pool.query("INSERT INTO workouts VALUES(?)", [req.body.exercise,
             req.body.reps, req.body.weight, req.body.lbs, req.body.date],
            function(err, result, fields){
               if(err){
