@@ -9,7 +9,13 @@ function validateNewEntry(form){
     //validate here
 }
 
+
 window.addEventListener("load", function(){
+    
+    var resetReq = new XMLHttpRequest();
+    resetReq.open("GET", "/reset-table", true);
+    resetReq.send(null);
+
     document.querySelector("#newExerciseForm").addEventListener("submit", function(event){
         event.preventDefault();
 
@@ -28,7 +34,7 @@ window.addEventListener("load", function(){
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener("load", function(event){
             if(req.readyState == 4 && req.status >= 200 && req.status < 400){
-                console.log(req.responseText);
+                //console.log(req.responseText);
             } else {
                 console.log("Something isn't right Error: " + req.status + ".");
             }
