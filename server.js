@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var app = express();
 
@@ -57,6 +59,7 @@ app.post("/new", function(req, res){
               }
             }); 
     res.render('index', context);
+    
 });
 
 
