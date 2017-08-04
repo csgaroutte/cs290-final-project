@@ -14,6 +14,13 @@ window.addEventListener("load", function(){
     
     var resetReq = new XMLHttpRequest();
     resetReq.open("GET", "/reset-table", true);
+    resetReq.addEventListener("load", function(){
+        if(resetReq.readyState == 4 && resetReq.status >=200 && resetReq.status < 400){
+            console.log(resetReq.responseText);
+        } else {
+            console.log("Something isn't right Error: " + req.status + ".");
+        }
+    });
     resetReq.send(null);
 
     document.querySelector("#newExerciseForm").addEventListener("submit", function(event){

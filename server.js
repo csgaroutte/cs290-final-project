@@ -55,9 +55,8 @@ app.post("/new", function(req, res){
               } else {
                  console.log("values inserted successfully");
               }
-
-              res.send(context);
             }); 
+    res.render('index', context);
 });
 
 
