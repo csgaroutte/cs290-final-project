@@ -49,8 +49,7 @@ app.get('/reset-table',function(req,res,next){
 
 app.post("/new", function(req, res){
     var context = {};
-    pool.query("INSERT INTO workouts VALUES(?)", [req.body.exercise,
-            req.body.reps, req.body.weight, req.body.lbs, req.body.date],
+    pool.query("INSERT INTO workouts VALUES(?)", [req.body.payload.params],
            function(err, result, fields){
               if(err){
                  throw err;

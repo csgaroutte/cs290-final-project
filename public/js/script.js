@@ -29,12 +29,20 @@ window.addEventListener("load", function(){
         var form = document.querySelector("#newExerciseForm");
         validateNewEntry(form); 
         
-        var params = {};
-        for(var i = 0; i < form.elements.length - 1; i++){
-            params[form.elements[i].name] = form.elements[i].value;
-        };
+        var payload = {};
+        payload.params = [];
+        payload.params.push(null);
+        payload.params.push(form.elements['exercise'].value); 
+        payload.params.push(form.elements['reps'].value); 
+        payload.params.push(form.elements['weight'].value); 
+        payload.params.push(form.elements['lbs'].value); 
+        payload.params.push(form.elements['date'].value); 
+      
+        //for(var i = 0; i < form.elements.length - 1; i++){
+        //    params[form.elements[i].name] = form.elements[i].value;
+        //};
 
-        console.log(params);
+        console.log(payload);
 
         var req = new XMLHttpRequest(); 
         req.open("POST", host, true);
@@ -46,6 +54,6 @@ window.addEventListener("load", function(){
                 console.log("Something isn't right Error: " + req.status + ".");
             }
         });
-        req.send(JSON.stringify(params));
+        req.send(JSON.stringify(payload));
     });
 });
