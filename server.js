@@ -27,7 +27,8 @@ var pool = mysql.createPool({
 app.set('port', 50918);
 
 app.get("/", function(req, res){
-    console.log("yabado");
+    var context = {};
+    res.render("index", context);
 });
 
 app.get('/reset-table',function(req,res,next){
@@ -48,19 +49,42 @@ app.get('/reset-table',function(req,res,next){
 });
 
 app.post("/new", function(req, res){
-    var context = {};
-    pool.query("INSERT INTO workouts VALUES(?)", [req.body.payload.params],
+    pool.query("INSERT INTO workouts VALUES(?)", [req.body.params],
            function(err, result, fields){
-              if(err){
-                 throw err;
-              } else {
-                 console.log("values inserted successfully");
-              }
+               if(err){
+                   throw err;
+               } 
+               console.log("Values " + result.insertId +
+               req.body.params + "succesfully inserted into table 'workouts'");
+               pool.query("SELECT * FROM workouts WHERE id=" + result.insertId, function(err, result, field){
+                   console.log(result);
+                   res.send(JSON.stringify(result[0]));
+               });
             }); 
-    res.render('index', context);
-    
 });
 
+app.post("/edit", function(req, res){
+    pool.query("UPDATE workouts " +
+           "SET name=" + req.body.exercise + ", reps=" + req.body.reps + 
+           ", weight=" + req.body.weight + ", lbs=" + req.body.lbs + ", date=" + req.body.date +
+           " WHERE id = " + req.body.id, function(err, result, fields){
+        if(err){
+            throw err;
+        }
+        console.log("Record with id " + req.body.id + " updated succesfully.");
+        res.send("OK.");
+    });
+});
+
+app.get("/delete", function(req, res){
+    pool.query("DELETE FROM workouts WHERE id=" + req.query.id, function(err, result, fields){
+        if(err){
+            throw err;
+        }
+        console.log("Record with id " + req.query.id + " deleted from table workouts.");
+        res.send("OK");
+    });
+});
 
 app.listen(app.get('port'), function(){
 	console.log("Express started on port:" + app.get('port') + 
