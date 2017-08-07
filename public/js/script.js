@@ -31,7 +31,6 @@ function validateNewEntry(form){
                 form.date.value = "Can't enter future dates!";
                 return false;
             } 
-        return true;
     }
     else {
         form.date.value = "Date must be in format YYYY-MM-DD.";
@@ -52,7 +51,7 @@ function validateNewEntry(form){
 function appendToExerciseRecords(vals){
     var form = document.createElement("form");
     form.innerHTML = "<input type='hidden' name='id' value=" + vals.id + ">" +  
-        "Exercise: <input readonly type='text' name='exercise' value='" + vals.name + "'> " +
+        "Exercise: <input readonly type='text' name='exercise' value='" + vals.exercise + "'> " +
         "Reps: <input readonly type='text' name='reps' value='" + vals.reps + "'> " +
         "Weight: <input readonly type='text' name='weight' value='" + vals.weight + "'> " +
         "Units: <input readonly type='text' name='units'  value='" + 
@@ -83,34 +82,35 @@ function handleEditExercise(event, button){
     } 
    
     else if(button.name == 'done'){
-        validateNewEntry(form); 
-        var payload = {};
-        payload.id = (form.elements['id'].value);
-        payload.exercise = (form.elements['exercise'].value); 
-        payload.reps = (form.elements['reps'].value); 
-        payload.weight = (form.elements['weight'].value); 
-        payload.date = (form.elements['date'].value); 
-        payload.units = (form.elements['units'].value); 
+        if(validateNewEntry(form)){ 
+            var payload = {};
+            payload.id = (form.elements['id'].value);
+            payload.exercise = (form.elements['exercise'].value); 
+            payload.reps = (form.elements['reps'].value); 
+            payload.weight = (form.elements['weight'].value); 
+            payload.date = (form.elements['date'].value); 
+            payload.units = (form.elements['units'].value); 
 
-        console.log(payload);
+            console.log(payload);
 
-        var req = new XMLHttpRequest(); 
-        req.open("POST", '/edit', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener("load", function(event){
-            if(req.readyState == 4 && req.status >= 200 && req.status < 400){
-                console.log(req.responseText);
-            } else {
-                console.log("Something went wrong. Error: " + req.status + ".");
-            }
-        });
-        req.send(JSON.stringify(payload)); 
-        
-        for(var i = 1; i < 6; i++){
-            form.elements[i].setAttribute('readonly', 'readonly'); 
-        } 
-        button.name = 'edit';
-        button.innerHTML = 'Edit';       
+            var req = new XMLHttpRequest(); 
+            req.open("POST", '/edit', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener("load", function(event){
+                if(req.readyState == 4 && req.status >= 200 && req.status < 400){
+                    console.log(req.responseText);
+                } else {
+                    console.log("Something went wrong. Error: " + req.status + ".");
+                }
+            });
+            req.send(JSON.stringify(payload)); 
+            
+            for(var i = 1; i < 6; i++){
+                form.elements[i].setAttribute('readonly', 'readonly'); 
+            } 
+            button.name = 'edit';
+            button.innerHTML = 'Edit';       
+        }
     }
 }
 

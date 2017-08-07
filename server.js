@@ -36,7 +36,7 @@ app.get('/reset-table',function(req,res,next){
     pool.query("DROP TABLE IF EXISTS workouts", function(err){
         var createString = "CREATE TABLE workouts("+
             "id INT PRIMARY KEY AUTO_INCREMENT,"+
-            "name VARCHAR(255) NOT NULL,"+
+            "exercise VARCHAR(255) NOT NULL,"+
             "reps INT,"+
             "weight INT,"+
             "date DATE,"+
@@ -56,12 +56,13 @@ app.post("/new", function(req, res){
                } 
                console.log("Values " + result.insertId +
                req.body.params + "succesfully inserted into table 'workouts'");
-               pool.query("SELECT id, name, reps, weight, DATE_FORMAT(date, " 
+               pool.query("SELECT id, exercise, reps, weight, DATE_FORMAT(date, " 
                        + "'%M %d, %Y') as date, units FROM workouts WHERE id=" 
                        + result.insertId, function(err, result, field){
                    if(err){
                        throw err;
                    }
+                   console.log(result[0]);
                    res.send(JSON.stringify(result[0]));
                });
             }); 
@@ -69,7 +70,7 @@ app.post("/new", function(req, res){
 
 app.post("/edit", function(req, res){
     pool.query("UPDATE workouts " +
-           "SET name=" + req.body.exercise + ", reps=" + req.body.reps + 
+           "SET exercise=" + req.body.exercise + ", reps=" + req.body.reps + 
            ", weight=" + req.body.weight + ", units=" + req.body.units + ", date=" + req.body.date +
            " WHERE id = " + req.body.id, function(err, result, fields){
         if(err){
