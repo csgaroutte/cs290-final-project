@@ -12,11 +12,12 @@
     <div id="createNewExcRecord">
       <form id="newExerciseForm" action="/new" method="POST">
         Exercise: <input type="text" name="exercise">
-        Reps: <input type="text" name="reps">
-        Weight: <input type="text" name="weight">
-        Units: <input type="text" name="lbs" 
+        Reps: <input type="number" min="0" name="reps">
+        Weight: <input type="number" min="0" name="weight">
+        Units: <input type="text" name="units" 
           value="Enter 1 for lbs, 0 for kg.">
-        Date: <input type="date" name="date">
+        Date: <input type="text" name="date"
+          value="YYYY-MM-DD">
         <input type="submit" name="submitNewRecord">
       </form>
     </div>

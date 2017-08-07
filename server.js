@@ -40,7 +40,7 @@ app.get('/reset-table',function(req,res,next){
             "reps INT,"+
             "weight INT,"+
             "date DATE,"+
-            "lbs BOOLEAN)";
+            "units BOOLEAN)";
         pool.query(createString, function(err){
             context.results = "Table reset";
             res.render('index',context);
@@ -56,8 +56,12 @@ app.post("/new", function(req, res){
                } 
                console.log("Values " + result.insertId +
                req.body.params + "succesfully inserted into table 'workouts'");
-               pool.query("SELECT * FROM workouts WHERE id=" + result.insertId, function(err, result, field){
-                   console.log(result);
+               pool.query("SELECT id, name, reps, weight, DATE_FORMAT(date, " 
+                       + "'%M %d, %Y') as date, units FROM workouts WHERE id=" 
+                       + result.insertId, function(err, result, field){
+                   if(err){
+                       throw err;
+                   }
                    res.send(JSON.stringify(result[0]));
                });
             }); 
@@ -66,7 +70,7 @@ app.post("/new", function(req, res){
 app.post("/edit", function(req, res){
     pool.query("UPDATE workouts " +
            "SET name=" + req.body.exercise + ", reps=" + req.body.reps + 
-           ", weight=" + req.body.weight + ", lbs=" + req.body.lbs + ", date=" + req.body.date +
+           ", weight=" + req.body.weight + ", units=" + req.body.units + ", date=" + req.body.date +
            " WHERE id = " + req.body.id, function(err, result, fields){
         if(err){
             throw err;
