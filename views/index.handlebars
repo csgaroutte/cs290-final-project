@@ -3,6 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link href="/css/style.css" type="text/css" rel="stylesheet">
     <title>Workout Tracker</title>
   </head>
   <body>
@@ -21,7 +22,21 @@
         <input type="submit" name="submitNewRecord">
       </form>
     </div>
-    <div id="exerciseRecords">
+    <div >
+      <table>
+        <thead>
+          <tr>
+            <th>Exercise</th>
+            <th>Reps</th>
+            <th>Weight</th>
+            <th>Units</th>
+            <th>Date</th>
+            <th></th><th></th>
+          </tr>
+        </thead>
+        <tbody id="exerciseRecords">
+        </tbody>
+      </table>
     </div>
     <footer>
     </footer>

@@ -57,7 +57,7 @@ app.post("/new", function(req, res){
                console.log("Values " + result.insertId +
                req.body.params + "succesfully inserted into table 'workouts'");
                pool.query("SELECT id, exercise, reps, weight, DATE_FORMAT(date, " 
-                       + "'%M %d, %Y') as date, units FROM workouts WHERE id=" 
+                       + "'%M %d, %Y') as dateF, units FROM workouts WHERE id=" 
                        + result.insertId, function(err, result, field){
                    if(err){
                        throw err;
@@ -70,12 +70,13 @@ app.post("/new", function(req, res){
 
 app.post("/edit", function(req, res){
     pool.query("UPDATE workouts " +
-           "SET exercise=" + req.body.exercise + ", reps=" + req.body.reps + 
-           ", weight=" + req.body.weight + ", units=" + req.body.units + ", date=" + req.body.date +
+           "SET exercise='" + req.body.exercise + "', reps=" + req.body.reps + 
+           ", weight=" + req.body.weight + ", date='" + req.body.date + "', units=" + req.body.units +
            " WHERE id = " + req.body.id, function(err, result, fields){
         if(err){
             throw err;
         }
+        console.log(fields);
         console.log("Record with id " + req.body.id + " updated succesfully.");
         res.send("OK.");
     });

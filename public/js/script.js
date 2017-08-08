@@ -30,7 +30,10 @@ function validateNewEntry(form){
             day > currentD.getDate())){ 
                 form.date.value = "Can't enter future dates!";
                 return false;
-            } 
+        } else if( month == 0 || day == 0){
+            form.date.value = "Month and day cannot be 0.";
+            return false;
+        }
     }
     else {
         form.date.value = "Date must be in format YYYY-MM-DD.";
@@ -49,49 +52,54 @@ function validateNewEntry(form){
 
 
 function appendToExerciseRecords(vals){
-    var form = document.createElement("form");
-    form.innerHTML = "<input type='hidden' name='id' value=" + vals.id + ">" +  
-        "Exercise: <input readonly type='text' name='exercise' value='" + vals.exercise + "'> " +
-        "Reps: <input readonly type='text' name='reps' value='" + vals.reps + "'> " +
-        "Weight: <input readonly type='text' name='weight' value='" + vals.weight + "'> " +
-        "Units: <input readonly type='text' name='units'  value='" + 
-        (vals.units == '1' ? 'lbs' : 'kg') + "'> " +
-        "Date: <input readonly type='date' name='date' value='" + vals.date + "'> " +
-        "<button name='edit' type='button'>Edit</button> " + 
-        "<button name='delete' type='button'>Delete</button> ";
-    document.getElementById("exerciseRecords").appendChild(form);
-    form.elements['delete'].addEventListener('click', function(event){
+    var row = document.createElement("tr");
+    row.innerHTML =
+        "<td><input readonly type='text' name='exercise' value='" + vals.exercise + "'></td> " +
+        "<td><input readonly type='text' name='reps' value='" + vals.reps + "'></td> " +
+        "<td><input readonly type='text' name='weight' value='" + vals.weight + "'></td> " +
+        "<td><input readonly type='text' name='units'  value='" + 
+        (vals.units == '1' ? 'lbs' : 'kg') + "'></td> " +
+        "<td><input readonly type='date' name='date' value='" + vals.dateF + "'></td> " +
+        "<td><button name='edit' type='button'>Edit</button></td> " + 
+        "<td><button name='delete' type='button'>Delete</button></td> " +
+        "<td><input type='hidden' name='id' value=" + vals.id + "><td>";
+    document.getElementById("exerciseRecords").appendChild(row);
+
+
+    row.children[6].firstChild.addEventListener('click', function(event){
         handleDeleteExercise(event, this);
     });
+
     var handler;
-    form.elements['edit'].addEventListener('click', handler = function(event){
+    row.children[5].firstChild.addEventListener('click', handler = function(event){
         handleEditExercise(event, this);
     });
 }
 
 function handleEditExercise(event, button){
 
-    var form = button.parentElement;
+    var row = button.parentElement.parentElement;
     if(button.name == 'edit'){
         button.innerHTML = 'Done Editing';
         button.name = 'done';
     
-        for(var i = 1; i < 6; i++){
-            form.elements[i].removeAttribute('readonly'); 
+        for(var i = 0; i < 5; i++){
+            row.children[i].firstChild.removeAttribute('readonly'); 
         }
     } 
    
     else if(button.name == 'done'){
-        if(validateNewEntry(form)){ 
+        var vals = {exercise: row.children[0].firstChild,
+            units: row.children[3].firstChild,
+            date: row.children[4].firstChild};
+        if(validateNewEntry(vals)){ 
             var payload = {};
-            payload.id = (form.elements['id'].value);
-            payload.exercise = (form.elements['exercise'].value); 
-            payload.reps = (form.elements['reps'].value); 
-            payload.weight = (form.elements['weight'].value); 
-            payload.date = (form.elements['date'].value); 
-            payload.units = (form.elements['units'].value); 
-
-            console.log(payload);
+            payload.id = row.children[7].firstChild.value;
+            payload.exercise = row.children[0].firstChild.value; 
+            payload.reps = row.children[1].firstChild.value; 
+            payload.weight = row.children[2].firstChild.value; 
+            payload.units = row.children[3].firstChild.value; 
+            payload.date = row.children[4].firstChild.value; 
 
             var req = new XMLHttpRequest(); 
             req.open("POST", '/edit', true);
@@ -105,8 +113,8 @@ function handleEditExercise(event, button){
             });
             req.send(JSON.stringify(payload)); 
             
-            for(var i = 1; i < 6; i++){
-                form.elements[i].setAttribute('readonly', 'readonly'); 
+            for(var i = 0; i < 5; i++){
+                row.children[i].firstChild.setAttribute('readonly', 'readonly'); 
             } 
             button.name = 'edit';
             button.innerHTML = 'Edit';       
@@ -131,13 +139,13 @@ function resetTable(){
 }
 
 function handleDeleteExercise(event, button){
-    var form = button.parentElement;
-    var q = '?id=' + form.elements['id'].value;
+    var row = button.parentElement.parentElement;
+    var q = '?id=' + row.children[7].firstChild.value;
     var req = new XMLHttpRequest();
     req.open('GET', '/delete' + q, true);
     req.addEventListener('load', function(){
         if(req.readyState == 4 && req.status >= 200 && req.status < 400){
-            form.remove();
+            row.remove();
         } else {
             console.log("Something isn't right. Error: " + req.status + ".");
         }
