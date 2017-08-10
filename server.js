@@ -59,12 +59,13 @@ app.post('/', function(req, res){
 });
 
 app.get('/get-list', function(req, res, next){
-    pool.query('SELECT * from workouts where name="' + 
-            req.query.name + '"', function(err, result, fields){
+    pool.query('SELECT id, exercise, reps, weight, DATE_FORMAT(date, ' +
+                        '"%M %d, %Y") as date, units from workouts where name="' + 
+            req.session.name + '"', function(err, result, fields){
                 if(err){
                     throw err;
                 }
-                res.send(result);
+                res.json(result);
             });
 });
 
@@ -78,7 +79,7 @@ app.get('/reset-table',function(req,res,next){
             "weight INT,"+
             "date DATE,"+
             "units BOOLEAN,"+
-            "name VARCHAR(255) NOT NULL)";
+            "name VARCHAR(255))";
         pool.query(createString, function(err){
             context.results = "Table reset";
             res.render('index',context);
@@ -96,12 +97,11 @@ app.post("/new", function(req, res){
                console.log("Values " + result.insertId +
                req.body.params + "succesfully inserted into table 'workouts'");
                pool.query("SELECT id, exercise, reps, weight, DATE_FORMAT(date, " 
-                       + "'%M %d, %Y') as dateF, units FROM workouts WHERE id=" 
+                       + "'%M %d, %Y') as date, units FROM workouts WHERE id=" 
                        + result.insertId, function(err, result, field){
                    if(err){
                        throw err;
                    }
-                   console.log(result[0]);
                    res.send(JSON.stringify(result[0]));
                });
             }); 

@@ -49,22 +49,122 @@ function validateNewEntry(form){
 }
 
 function printTable(){
+    var req = new XMLHttpRequest();
+    req.open('GET', '/get-list', true);
+    req.addEventListener('load', function(){
+        if(req.readyState == 4 && req.status >= 200 && req.status < 400){
+            var res = JSON.parse(req.responseText);
+            if(!res.length){
+                document.querySelector("#recordsBanner").appendChild(
+                        document.createTextNode(
+                    'You have not added any exercises yet!'
+                    ));
+            } else {
+                //Change table banner.
+                document.querySelector("#recordsBanner").textContent = 'Here is your list.';
+
+                //Attach table headers.
+                var tr = document.querySelector("#tableHeaders");
+                var th = document.createElement("TH");
+                var text = document.createTextNode("Exercise");
+                th.appendChild(text);
+                tr.appendChild(th);
+                th = document.createElement("TH");
+                text = document.createTextNode("Reps");
+                th.appendChild(text);
+                tr.appendChild(th);
+                th = document.createElement("TH");
+                text = document.createTextNode("Weight");
+                th.appendChild(text);
+                tr.appendChild(th);
+                th = document.createElement("TH");
+                text = document.createTextNode("Units");
+                th.appendChild(text);
+                tr.appendChild(th);
+                th = document.createElement("TH");
+                text = document.createTextNode("Date");
+                th.appendChild(text);
+                tr.appendChild(th);
+
+                //Append records to table.
+                var tbody = document.querySelector('#exerciseRecords');
+                for(var i = 0; i < res.length; i++){
+                    appendToExerciseRecords(res[i]);
+                }
+            }
+        } else {
+            console.log('Something went wrong. Error: ' + req.status);
+        }
+    });
+    req.send(null);
 }
 
 function appendToExerciseRecords(vals){
-    var row = document.createElement("tr");
-    row.innerHTML =
-        "<td><input readonly type='text' name='exercise' value='" + vals.exercise + "'></td> " +
-        "<td><input readonly type='text' name='reps' value='" + vals.reps + "'></td> " +
-        "<td><input readonly type='text' name='weight' value='" + vals.weight + "'></td> " +
-        "<td><input readonly type='text' name='units'  value='" + 
-        (vals.units == '1' ? 'lbs' : 'kg') + "'></td> " +
-        "<td><input readonly type='date' name='date' value='" + vals.dateF + "'></td> " +
-        "<td><button name='edit' type='button'>Edit</button></td> " + 
-        "<td><button name='delete' type='button'>Delete</button></td> " +
-        "<td><input type='hidden' name='id' value=" + vals.id + "><td>";
-    document.getElementById("exerciseRecords").appendChild(row);
+    var row = document.createElement('tr');
+    var td = document.createElement('td');
+    var input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('type', 'text');
+    input.setAttribute('name', 'exercise');
+    input.setAttribute('value', vals.exercise);
+    td.appendChild(input);
+    row.appendChild(td);    
+    td = document.createElement('td');
+    input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('type', 'text');
+    input.setAttribute('name', 'reps');
+    input.setAttribute('value', vals.reps);
+    td.appendChild(input);
+    row.appendChild(td); 
+    td = document.createElement('td');
+    input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('type', 'text');
+    input.setAttribute('name', 'weight');
+    input.setAttribute('value', vals.weight);
+    td.appendChild(input);
+    row.appendChild(td); 
+    td = document.createElement('td');
+    input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('type', 'text');
+    input.setAttribute('name', 'units');
+    input.setAttribute('value', (vals.units == "1" ?"lbs":"kg"));
+    td.appendChild(input);
+    row.appendChild(td); 
+    td = document.createElement('td');
+    input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('type', 'text');
+    input.setAttribute('name', 'date');
+    input.setAttribute('value', vals.date);
+    td.appendChild(input);
+    row.appendChild(td); 
+    td = document.createElement('td');
+    var button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.setAttribute('name', 'edit');
+    button.appendChild(document.createTextNode('Edit'));
+    td.appendChild(button);
+    row.appendChild(td); 
+    td = document.createElement('td');
+    button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.setAttribute('name', 'delete');
+    button.appendChild(document.createTextNode('Delete'));
+    td.appendChild(button);
+    row.appendChild(td); 
+    td = document.createElement('td');
+    input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('type', 'hidden');
+    input.setAttribute('name', 'id');
+    input.setAttribute('value', vals.id);
+    td.appendChild(input);
+    row.appendChild(td); 
 
+    document.getElementById("exerciseRecords").appendChild(row);
 
     row.children[6].firstChild.addEventListener('click', function(event){
         handleDeleteExercise(event, this);
@@ -74,6 +174,8 @@ function appendToExerciseRecords(vals){
     row.children[5].firstChild.addEventListener('click', handler = function(event){
         handleEditExercise(event, this);
     });
+
+
 }
 
 function handleEditExercise(event, button){
@@ -130,7 +232,7 @@ function resetTable(){
     resetReq.open("GET", "/reset-table", true);
     resetReq.addEventListener("load", function(){
         if(resetReq.readyState == 4 && resetReq.status >=200 && resetReq.status < 400){
-            //console.log(resetReq.responseText);
+            printTable();
         } else {
             console.log("Something isn't right. Error: " + req.status + ".");
         }
@@ -186,8 +288,9 @@ function handleNewExerciseEvent(){
 }
 
 
-resetTable();
+//resetTable();
 
 window.addEventListener("load", function(){
+    printTable();
     handleNewExerciseEvent();
    });
