@@ -2,7 +2,10 @@
   <h1>Workout Tracker</h1>
   <h3><i>Enter your name below to retrieve your list.</i></h3>
   <form id='loginForm' action='/' method='POST'>
-    <input type='text' name='loginName'>
+    <input required placeholder="Enter your name." type='text' name='loginName' 
+        oninvalid='this.setCustomValidity("Name must bot be empty and" +
+        " composed only of uppercase and lowercase letters.")'
+        pattern='^(?!\s*$)[A-Za-z\s]{1,255}$' oninput='this.setCustomValidity("")'>
     <input type='submit' name='submit' value='Get List'>
   </form>
 </div>

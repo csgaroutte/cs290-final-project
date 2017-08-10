@@ -120,34 +120,48 @@ function appendToExerciseRecords(vals){
     var row = document.createElement('tr');
     var td = document.createElement('td');
     var input = document.createElement('input');
+    input.setAttribute('required', 'required');
+    input.setAttribute('oninvalid', 'this.setCustomValidity("Exercise name"' +
+                '"must not be empty and must be composed only of uppercase and"'+
+                '" lowercase letters.")');
+    input.setAttribute('pattern', '^(?!\s*$)[A-Za-z\s]{1,255}$');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'text');
     input.setAttribute('name', 'exercise');
     input.setAttribute('value', vals.exercise);
+    input.setAttribute('oninput', 'this.setCustomValidity("")');
     td.appendChild(input);
     row.appendChild(td);    
     td = document.createElement('td');
     input = document.createElement('input');
+    input.setAttribute('required', 'required');
     input.setAttribute('readonly', 'readonly');
-    input.setAttribute('type', 'text');
+    input.setAttribute('type', 'number');
     input.setAttribute('name', 'reps');
     input.setAttribute('value', vals.reps);
+    input.setAttribute('oninput', 'this.setCustomValidity("")');
     td.appendChild(input);
     row.appendChild(td); 
     td = document.createElement('td');
     input = document.createElement('input');
+    input.setAttribute('required', 'required');
     input.setAttribute('readonly', 'readonly');
-    input.setAttribute('type', 'text');
+    input.setAttribute('type', 'number');
     input.setAttribute('name', 'weight');
     input.setAttribute('value', vals.weight);
+    input.setAttribute('oninput', 'this.setCustomValidity("")');
     td.appendChild(input);
     row.appendChild(td); 
     td = document.createElement('td');
     input = document.createElement('input');
+    input.setAttribute('required', 'required');
+    input.setAttribute('oninvalid', 'this.setCustomValidity("Enter 1 for lbs  or 0 for kg.")');
+    input.setAttribute('pattern', '^[0-1]$');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'text');
     input.setAttribute('name', 'units');
     input.setAttribute('value', (vals.units == "1" ?"lbs":"kg"));
+    input.setAttribute('oninput', 'this.setCustomValidity("")');
     td.appendChild(input);
     row.appendChild(td); 
     td = document.createElement('td');
@@ -206,12 +220,13 @@ function appendToExerciseRecords(vals){
 function handleEditExercise(event, button){
     var row = button.parentElement.parentElement;
     if(button.name == 'edit'){
-        button.innerHTML = 'Done Editing';
+        button.innerHTML = 'Done';
         button.name = 'done';
     
         for(var i = 0; i < 5; i++){
             row.children[i].firstChild.removeAttribute('readonly'); 
         }
+        row.children[3].firstChild.value = (row.children[3].firstChild.value == 'lbs' ? '1' : '0');
     } 
    
     else if(button.name == 'done'){

@@ -69,7 +69,7 @@ app.post('/', function(req, res){
 
 app.get('/get-list', function(req, res, next){
     pool.query('SELECT id, exercise, reps, weight, DATE_FORMAT(date, ' +
-        '"%M %d, %Y") as dateF, units from workouts where name="' + 
+        '"%Y-%m-%d") as dateF, units from workouts where name="' + 
         req.session.name + '" ORDER BY date DESC', function(err, result, fields){
             if(err){
                 throw err;
@@ -110,7 +110,7 @@ app.post("/new", function(req, res){
                console.log("Values " + result.insertId +
                req.body.params + "succesfully inserted into table 'workouts'");
                pool.query("SELECT id, exercise, reps, weight, DATE_FORMAT(date, " 
-                       + "'%M %d, %Y') as date, units FROM workouts WHERE id=" 
+                       + "'%Y-%m-%d') as date, units FROM workouts WHERE id=" 
                        + result.insertId, function(err, result, field){
                    if(err){
                        throw err;
