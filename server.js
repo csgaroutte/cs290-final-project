@@ -14,6 +14,13 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+var session = require('express-session');
+app.use(session({
+    secret: 'CS290FinalProjectSecret',
+    resave: true,
+    saveUninitialized:true
+}));
+
 var mysql = require('mysql');
 var pool = mysql.createPool({
     connectionLimit: 10,
@@ -28,7 +35,37 @@ app.set('port', 50918);
 
 app.get("/", function(req, res){
     var context = {};
-    res.render("index", context);
+
+    if(!req.session.name){
+        res.render('login', context);
+        return;
+    }
+
+    if(req.session.name){
+        //context.script = '
+        context.name = req.session.name;
+        res.render('index', context);
+    }
+});
+
+app.post('/', function(req, res){
+    if(req.body['loginName']){
+        req.session.name = req.body['loginName'];
+        var context = {};
+        console.log(req.body['loginName']);
+        context.name = req.body['loginName'];
+        res.render('index', context);
+    }
+});
+
+app.get('/get-list', function(req, res, next){
+    pool.query('SELECT * from workouts where name="' + 
+            req.query.name + '"', function(err, result, fields){
+                if(err){
+                    throw err;
+                }
+                res.send(result);
+            });
 });
 
 app.get('/reset-table',function(req,res,next){
@@ -40,7 +77,8 @@ app.get('/reset-table',function(req,res,next){
             "reps INT,"+
             "weight INT,"+
             "date DATE,"+
-            "units BOOLEAN)";
+            "units BOOLEAN,"+
+            "name VARCHAR(255) NOT NULL)";
         pool.query(createString, function(err){
             context.results = "Table reset";
             res.render('index',context);
@@ -49,6 +87,7 @@ app.get('/reset-table',function(req,res,next){
 });
 
 app.post("/new", function(req, res){
+    req.body.params.push(req.session.name);
     pool.query("INSERT INTO workouts VALUES(?)", [req.body.params],
            function(err, result, fields){
                if(err){

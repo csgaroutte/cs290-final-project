@@ -1,5 +1,4 @@
 "use strict";
-var host = "/new";
 
 function validateNewEntry(form){
     //Validate name of exercise.
@@ -49,7 +48,8 @@ function validateNewEntry(form){
     return true;
 }
 
-
+function printTable(){
+}
 
 function appendToExerciseRecords(vals){
     var row = document.createElement("tr");
@@ -167,11 +167,9 @@ function handleNewExerciseEvent(){
             payload.params.push(form.elements['weight'].value); 
             payload.params.push(form.elements['date'].value); 
             payload.params.push(form.elements['units'].value); 
-          
-            console.log(payload.params);
 
             var req = new XMLHttpRequest(); 
-            req.open("POST", host, true);
+            req.open('POST', '/new', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener("load", function(event){
                 if(req.readyState == 4 && req.status >= 200 && req.status < 400){
