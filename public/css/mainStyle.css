@@ -1,0 +1,44 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background-image: url('/assets/dark_embroidery.png');
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.box {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  width: 80%;
+  background-image: url('/assets/greyzz.png');
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-align-items: center;
+}
+
+h1, h3, form {
+  margin: 15px 0;
+  font-size: 150%;
+}
+
+h1, h3 {
+  color: #000011;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+  border-bottom: 2px solid black;
+  font-size: 300%;
+}
+
+#recordsBanner {
+  text-align: center;
+}

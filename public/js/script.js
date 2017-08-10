@@ -1,5 +1,10 @@
 "use strict";
 
+/* function: validateNewEntry
+ * params: form element
+ * returns: false if any validation fails, true if all validations pass
+ * description: checks that form entries are valid for an exercise submission
+ */
 function validateNewEntry(form){
     //Validate name of exercise.
     var exercise = form.exercise.value;
@@ -48,6 +53,11 @@ function validateNewEntry(form){
     return true;
 }
 
+/* function: printTable
+ * params: none
+ * returns: none
+ * description: appends all records to the exercise records html table
+ */
 function printTable(){
     var req = new XMLHttpRequest();
     req.open('GET', '/get-list', true);
@@ -55,16 +65,16 @@ function printTable(){
         if(req.readyState == 4 && req.status >= 200 && req.status < 400){
             var res = JSON.parse(req.responseText);
             if(!res.length){
-                document.querySelector("#recordsBanner").appendChild(
-                        document.createTextNode(
-                    'You have not added any exercises yet!'
-                    ));
+                document.querySelector("#recordsBanner").textContent =
+                    'Your list is empty!';
+                document.querySelector('#tableHeaders').innerHTML = '';
             } else {
                 //Change table banner.
-                document.querySelector("#recordsBanner").textContent = 'Here is your list.';
+                document.querySelector("#recordsBanner").textContent = '';
 
                 //Attach table headers.
                 var tr = document.querySelector("#tableHeaders");
+                tr.innerHTML = '';
                 var th = document.createElement("TH");
                 var text = document.createTextNode("Exercise");
                 th.appendChild(text);
@@ -88,6 +98,7 @@ function printTable(){
 
                 //Append records to table.
                 var tbody = document.querySelector('#exerciseRecords');
+                tbody.innerHTML = '';
                 for(var i = 0; i < res.length; i++){
                     appendToExerciseRecords(res[i]);
                 }
@@ -99,6 +110,12 @@ function printTable(){
     req.send(null);
 }
 
+/* function: appendToExerciseRecords
+ * params: vals - object describing a single exercise record
+ * returns: none
+ * description: appends a single exercise record to the exercise records html table;
+ * used by printTable() to append all records to the html table
+ */
 function appendToExerciseRecords(vals){
     var row = document.createElement('tr');
     var td = document.createElement('td');
@@ -138,7 +155,7 @@ function appendToExerciseRecords(vals){
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'text');
     input.setAttribute('name', 'date');
-    input.setAttribute('value', vals.date);
+    input.setAttribute('value', vals.dateF);
     td.appendChild(input);
     row.appendChild(td); 
     td = document.createElement('td');
@@ -178,8 +195,15 @@ function appendToExerciseRecords(vals){
 
 }
 
+/* function: handleEditExercise
+ * params: event - click event tied to the edit button; 
+ * button - the button which this function is tied to
+ * returns: none
+ * description: called when the edit button is clicked for a record;
+ * changes the inputs for the record to editable, and when the user clicks
+ * the button again, updates the record in the table as well as the record in the mysql database
+ */
 function handleEditExercise(event, button){
-
     var row = button.parentElement.parentElement;
     if(button.name == 'edit'){
         button.innerHTML = 'Done Editing';
@@ -227,6 +251,7 @@ function handleEditExercise(event, button){
 function resetCreateFormValues(){
 }
 
+/*
 function resetTable(){
     var resetReq = new XMLHttpRequest();
     resetReq.open("GET", "/reset-table", true);
@@ -239,7 +264,16 @@ function resetTable(){
     });
     resetReq.send(null);
 }
+*/
 
+/* function: handleDeleteExercise
+ * params: event - click event tied to the button that call this function;
+ * button - the button which this function is tied to
+ * returns: none
+ * description: when the delete button is clicked, an AJAX request is made to the
+ * database; if the record is successfully deleted from the database, it is
+ * also removed from the html table
+ */
 function handleDeleteExercise(event, button){
     var row = button.parentElement.parentElement;
     var q = '?id=' + row.children[7].firstChild.value;
@@ -248,13 +282,21 @@ function handleDeleteExercise(event, button){
     req.addEventListener('load', function(){
         if(req.readyState == 4 && req.status >= 200 && req.status < 400){
             row.remove();
+            printTable();
         } else {
             console.log("Something isn't right. Error: " + req.status + ".");
         }
     });
     req.send(null);
 }
-                                                  
+
+/* function: handleNewExerciseEvent
+ * params: none
+ * returns: none
+ * description: sends an AJAX request to the database when the newExerciseForm
+ * is submitted. if the form values are succesfully inserted into the database,
+ * the updated html table is printed.
+ */                                                  
 function handleNewExerciseEvent(){
     document.querySelector("#newExerciseForm").addEventListener("submit", function(event){
         event.preventDefault();
@@ -275,8 +317,8 @@ function handleNewExerciseEvent(){
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener("load", function(event){
                 if(req.readyState == 4 && req.status >= 200 && req.status < 400){
-                    console.log((JSON.parse(req.responseText)));
-                    appendToExerciseRecords(JSON.parse(req.responseText));
+                    //appendToExerciseRecords(JSON.parse(req.responseText));
+                    printTable();
                 } else {
                     console.log("Something isn't right Error: " + req.status + ".");
                 }
@@ -287,8 +329,6 @@ function handleNewExerciseEvent(){
 
 }
 
-
-//resetTable();
 
 window.addEventListener("load", function(){
     printTable();
