@@ -59,7 +59,7 @@ app.post('/', function(req, res){
     if(req.body['loginName']){
         req.session.name = req.body['loginName'];
         var context = {};
-        console.log(req.body['loginName']);
+        console.log(req.body['loginName'] + " logged in.");
         context.name = req.body['loginName'];
         context.script = 'js/script.js';
         context.style = 'css/mainStyle.css';
@@ -74,7 +74,6 @@ app.get('/get-list', function(req, res, next){
             if(err){
                 throw err;
             }
-            console.log(result);
             res.json(result);
         });
 });
@@ -107,7 +106,7 @@ app.post("/new", function(req, res){
                if(err){
                    throw err;
                } 
-               console.log("Values " + result.insertId +
+               console.log("Values " + result.insertId + ", " +
                req.body.params + "succesfully inserted into table 'workouts'");
                pool.query("SELECT id, exercise, reps, weight, DATE_FORMAT(date, " 
                        + "'%Y-%m-%d') as date, units FROM workouts WHERE id=" 
@@ -129,7 +128,6 @@ app.post("/edit", function(req, res){
         if(err){
             throw err;
         }
-        console.log(fields);
         console.log("Record with id " + req.body.id + " updated succesfully.");
         res.send("OK.");
     });

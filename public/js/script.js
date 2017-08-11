@@ -1,25 +1,30 @@
 "use strict";
 
-/* function: validateNewEntry
+/* function: validateDate
  * params: form element
  * returns: false if any validation fails, true if all validations pass
  * description: checks that form entries are valid for an exercise submission
  */
-function validateNewEntry(form){
-    //Validate name of exercise.
-    var exercise = form.exercise.value;
-    if(exercise == ""){
-        form.exercise.value = "Field cannot be blank!";
-        return false;
-    }
-
+function validateDate(date){
     //Check that date has not passed and is valid.
-    var date = form.date.value;
-    console.log(typeof date);
-    var d = date.toString();
+    var d = date.value.toString();
     var currentD = new Date();
     if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(d)){
         var year = d.slice(0,4);
+        /* Check if date is a leap year. Psuedocode for the algorith below was
+        obtained from https://en.wikipedia.org/wiki/Leap_year. */
+        var leapYear;
+        if(year % 4){
+            leapYear = false;
+        } else if(year % 100){
+            leapYear = true;
+        } else if(year % 400){
+            leapYear = false;
+        } else {
+            leapYear = true;
+        }
+
+
         var month, day;
         if(d.charAt(6) == '-'){
             month = d.slice(5,6);
@@ -29,26 +34,36 @@ function validateNewEntry(form){
             day = d.slice(8);
         }
         if((year > currentD.getFullYear()) ||
-            (year >= currentD.getFullYear() && (month > currentD.getMonth() + 1)) ||
-            (year >= currentD.getFullYear() && month >= currentD.getMonth() + 1 &&
-            day > currentD.getDate())){ 
-                form.date.value = "Can't enter future dates!";
-                return false;
+                (year >= currentD.getFullYear() && (month > currentD.getMonth() + 1)) ||
+                (year >= currentD.getFullYear() && month >= currentD.getMonth() + 1 &&
+                day > currentD.getDate())){ 
+            alert('Date cannot be in the future.');
+            return false;
         } else if( month == 0 || day == 0){
-            form.date.value = "Month and day cannot be 0.";
+            alert('Neither month nor day can be 0.');
+            return false;
+        } else if(month > 12) {
+            return false;
+        } else if((month == '1' || month == '3' || month == '5' 
+                || month == '7' || month == '8' || month == '10'
+                || month == '12') && day > 31){
+            alert('Day not in range.');
+            return false;
+        } else if((month == '4' || month == '6' || month == '9'
+                    || month == '11') && day > 30){
+            alert('Day not in range.');
+            return false;
+        } else if(leapYear && month == '2' && day > 29){
+            alert('Day not in range.');
+            return false;
+        } else if(!leapYear && month == '2' && day > 28){
+            alert('Day not in range.');
             return false;
         }
     }
     else {
-        form.date.value = "Date must be in format YYYY-MM-DD.";
+        alert('Date must be in format YYYY-MM-DD.');
         return false;
-    }
-
-    //Check that units is boolean (1 or 0).
-    var units = form.units.value;
-    if(units != 1 && units != 0){
-      form.units.value = "Enter 1 or 0!";
-      return false; 
     }
     return true;
 }
@@ -117,13 +132,16 @@ function printTable(){
  * used by printTable() to append all records to the html table
  */
 function appendToExerciseRecords(vals){
+    //Ugly DOM manipulations to create a record that is also a
+    //readonly form until the edit button is clicked.
     var row = document.createElement('tr');
     var td = document.createElement('td');
     var input = document.createElement('input');
     input.setAttribute('required', 'required');
-    input.setAttribute('oninvalid', 'this.setCustomValidity("Exercise name"' +
-                '"must not be empty and must be composed only of uppercase and"'+
-                '" lowercase letters.")');
+    input.setAttribute('oninvalid',
+            "this.setCustomValidity('Exercise name" +
+                " must not be empty and must be composed only of uppercase and"+
+                " lowercase letters.')");
     input.setAttribute('pattern', '^(?!\s*$)[A-Za-z\s]{1,255}$');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'text');
@@ -137,6 +155,8 @@ function appendToExerciseRecords(vals){
     input.setAttribute('required', 'required');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'number');
+    input.setAttribute('min', '0');
+    input.setAttribute('max', '50000');
     input.setAttribute('name', 'reps');
     input.setAttribute('value', vals.reps);
     input.setAttribute('oninput', 'this.setCustomValidity("")');
@@ -146,6 +166,8 @@ function appendToExerciseRecords(vals){
     input = document.createElement('input');
     input.setAttribute('required', 'required');
     input.setAttribute('readonly', 'readonly');
+    input.setAttribute('min', '0');
+    input.setAttribute('max', '50000');
     input.setAttribute('type', 'number');
     input.setAttribute('name', 'weight');
     input.setAttribute('value', vals.weight);
@@ -169,6 +191,7 @@ function appendToExerciseRecords(vals){
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'text');
     input.setAttribute('name', 'date');
+    input.setAttribute('oninput', 'this.setCustomValidity("")');
     input.setAttribute('value', vals.dateF);
     td.appendChild(input);
     row.appendChild(td); 
@@ -233,7 +256,7 @@ function handleEditExercise(event, button){
         var vals = {exercise: row.children[0].firstChild,
             units: row.children[3].firstChild,
             date: row.children[4].firstChild};
-        if(validateNewEntry(vals)){ 
+        if(validateDate(row.children[4].firstChild)){ 
             var payload = {};
             payload.id = row.children[7].firstChild.value;
             payload.exercise = row.children[0].firstChild.value; 
@@ -248,6 +271,7 @@ function handleEditExercise(event, button){
             req.addEventListener("load", function(event){
                 if(req.readyState == 4 && req.status >= 200 && req.status < 400){
                     console.log(req.responseText);
+                    printTable();
                 } else {
                     console.log("Something went wrong. Error: " + req.status + ".");
                 }
@@ -261,9 +285,6 @@ function handleEditExercise(event, button){
             button.innerHTML = 'Edit';       
         }
     }
-}
-
-function resetCreateFormValues(){
 }
 
 /*
@@ -317,7 +338,7 @@ function handleNewExerciseEvent(){
         event.preventDefault();
 
         var form = document.querySelector("#newExerciseForm");
-        if(validateNewEntry(form)){
+        if(validateDate(form.date)){
             var payload = {};
             payload.params = [];
             payload.params.push(null);

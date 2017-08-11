@@ -1,4 +1,4 @@
-<div class='box'>
+<div class="box">
     <header>
       <h1>{{name}}'s Workout Tracker</h1>
     </header>
@@ -8,27 +8,28 @@
             placeholder="Enter exercise name." 
             type="text" 
             name="exercise" 
-            oninvalid='this.setCustomValidity("Exercise name must not be empty and must be composed only of uppercase and lowercase letters.")' 
-            pattern='^(?!\s*$)[A-Za-z\s]{1,255}$'
-            oninput='this.setCustomValidity("")'
+            oninvalid="this.setCustomValidity('Exercise name must not be empty and must be composed only of uppercase and lowercase letters.')" 
+            pattern="^(?!\s*$)[A-Za-z\s]{1,255}$"
+            oninput="this.setCustomValidity('')"
         >
         Reps: <input required placeholder="Enter a number." 
-            type="number" min="0" name="reps"
-            oninput='this.setCustomValidity("")'
+            type="number" min="0" max="50000" name="reps"
+            oninput="this.setCustomValidity('')"
         >
         Weight: <input required placeholder="Enter a number." 
-            type="number" min="0" name="weight"
-            oninput='this.setCustomValidity("")'
+            type="number" min="0" max="50000" name="weight"
+            oninput="this.setCustomValidity('')"
         >
         Units: <input required placeholder="Enter 1 for lbs, 0 for kg." 
             type="text" name="units" 
-            oninvalid='this.setCustomValidity("Enter 1 or 0.")' pattern='^[0-1]$'
-            oninput='this.setCustomValidity("")'
+            oninvalid="this.setCustomValidity('Enter 1 or 0.')" pattern="^[0-1]$"
+            oninput="this.setCustomValidity('')"
         >
-        Date: <input required 
+        Date: <input id="dateInput" required 
             placeholder="YYYY-MM-DD" type="text" name="date"
+            oninput="this.setCustomValidity('')"
         >
-        <input type="submit" name="submitNewRecord" value='Add To List'>
+        <input type="submit" name="submitNewRecord" value="Add To List">
       </form>
     </div>
     <div id="records">
@@ -44,6 +45,4 @@
     </div>
     <footer>
     </footer>
- <!--   <script src="js/script.js" type="text/javascript"></script> -->
-
 </div>

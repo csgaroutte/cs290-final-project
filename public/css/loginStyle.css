@@ -16,6 +16,7 @@ html, body {
   margin: 0;
   padding: 0;
   width: 50%;
+  min-width: 600px;
   background-image: url('/assets/greyzz.png');
   display: -webkit-flex;
   display: flex;
