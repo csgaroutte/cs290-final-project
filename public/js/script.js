@@ -90,23 +90,23 @@ function printTable(){
                 //Attach table headers.
                 var tr = document.querySelector("#tableHeaders");
                 tr.innerHTML = '';
-                var th = document.createElement("TH");
+                var th = document.createElement("th");
                 var text = document.createTextNode("Exercise");
                 th.appendChild(text);
                 tr.appendChild(th);
-                th = document.createElement("TH");
+                th = document.createElement("th");
                 text = document.createTextNode("Reps");
                 th.appendChild(text);
                 tr.appendChild(th);
-                th = document.createElement("TH");
+                th = document.createElement("th");
                 text = document.createTextNode("Weight");
                 th.appendChild(text);
                 tr.appendChild(th);
-                th = document.createElement("TH");
+                th = document.createElement("th");
                 text = document.createTextNode("Units");
                 th.appendChild(text);
                 tr.appendChild(th);
-                th = document.createElement("TH");
+                th = document.createElement("th");
                 text = document.createTextNode("Date");
                 th.appendChild(text);
                 tr.appendChild(th);
@@ -142,7 +142,7 @@ function appendToExerciseRecords(vals){
             "this.setCustomValidity('Exercise name" +
                 " must not be empty and must be composed only of uppercase and"+
                 " lowercase letters.')");
-    input.setAttribute('pattern', '^(?!\s*$)[A-Za-z\s]{1,255}$');
+    input.setAttribute('pattern', '^(?!\\s*$)[A-Za-z\\s]{1,255}$');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('type', 'text');
     input.setAttribute('name', 'exercise');
@@ -196,10 +196,10 @@ function appendToExerciseRecords(vals){
     td.appendChild(input);
     row.appendChild(td); 
     td = document.createElement('td');
-    var button = document.createElement('button');
+    var button= document.createElement('button');
     button.setAttribute('type', 'button');
     button.setAttribute('name', 'edit');
-    button.appendChild(document.createTextNode('Edit'));
+    button.appendChild(document.createTextNode("Edit"));
     td.appendChild(button);
     row.appendChild(td); 
     td = document.createElement('td');
@@ -224,67 +224,75 @@ function appendToExerciseRecords(vals){
         handleDeleteExercise(event, this);
     });
 
-    var handler;
-    row.children[5].firstChild.addEventListener('click', handler = function(event){
-        handleEditExercise(event, this);
+    row.children[5].firstChild.addEventListener('click', function(){
+        if(this.name == "edit" && !document.querySelector("#submittedButton")){
+            this.setAttribute("id", "submittedButton");
+            this.setAttribute("type", "submit");
+        } else if(this.name == "edit" && this.id != "submittedButton") {
+            alert("Please submit your other edit first.");
+        }
     });
 
 
 }
 
 /* function: handleEditExercise
- * params: event - click event tied to the edit button; 
- * button - the button which this function is tied to
+ * params: none 
  * returns: none
- * description: called when the edit button is clicked for a record;
+ * description: ties an event listener for the submit event to tableForm; 
  * changes the inputs for the record to editable, and when the user clicks
- * the button again, updates the record in the table as well as the record in the mysql database
+ * the edit button again, updates the record in the table as well as the record in the mysql database
  */
-function handleEditExercise(event, button){
-    var row = button.parentElement.parentElement;
-    if(button.name == 'edit'){
-        button.innerHTML = 'Done';
-        button.name = 'done';
-    
-        for(var i = 0; i < 5; i++){
-            row.children[i].firstChild.removeAttribute('readonly'); 
-        }
-        row.children[3].firstChild.value = (row.children[3].firstChild.value == 'lbs' ? '1' : '0');
-    } 
-   
-    else if(button.name == 'done'){
-        var vals = {exercise: row.children[0].firstChild,
-            units: row.children[3].firstChild,
-            date: row.children[4].firstChild};
-        if(validateDate(row.children[4].firstChild)){ 
-            var payload = {};
-            payload.id = row.children[7].firstChild.value;
-            payload.exercise = row.children[0].firstChild.value; 
-            payload.reps = row.children[1].firstChild.value; 
-            payload.weight = row.children[2].firstChild.value; 
-            payload.units = row.children[3].firstChild.value; 
-            payload.date = row.children[4].firstChild.value; 
+function handleEditExercise(){
+    var handler;
+    document.querySelector("#tableForm").addEventListener('submit', handler = function(event){
+        var button = document.querySelector("#submittedButton");
+        event.preventDefault();
+        var row = button.parentElement.parentElement;
 
-            var req = new XMLHttpRequest(); 
-            req.open("POST", '/edit', true);
-            req.setRequestHeader('Content-Type', 'application/json');
-            req.addEventListener("load", function(event){
-                if(req.readyState == 4 && req.status >= 200 && req.status < 400){
-                    console.log(req.responseText);
-                    printTable();
-                } else {
-                    console.log("Something went wrong. Error: " + req.status + ".");
-                }
-            });
-            req.send(JSON.stringify(payload)); 
-            
+        if(button.name == 'edit'){
+            button.innerHTML= 'Done';
+            button.name = 'done';
+        
             for(var i = 0; i < 5; i++){
-                row.children[i].firstChild.setAttribute('readonly', 'readonly'); 
-            } 
-            button.name = 'edit';
-            button.innerHTML = 'Edit';       
+                row.children[i].firstChild.removeAttribute('readonly'); 
+            }
+            row.children[3].firstChild.value = (row.children[3].firstChild.value == 'lbs' ? '1' : '0');
+        } 
+       
+        else if(button.name == 'done'){
+            if(validateDate(row.children[4].firstChild)){ 
+                var payload = {};
+                payload.id = row.children[7].firstChild.value;
+                payload.exercise = row.children[0].firstChild.value; 
+                payload.reps = row.children[1].firstChild.value; 
+                payload.weight = row.children[2].firstChild.value; 
+                payload.units = row.children[3].firstChild.value; 
+                payload.date = row.children[4].firstChild.value; 
+
+                var req = new XMLHttpRequest(); 
+                req.open("POST", '/edit', true);
+                req.setRequestHeader('Content-Type', 'application/json');
+                req.addEventListener("load", function(event){
+                    if(req.readyState == 4 && req.status >= 200 && req.status < 400){
+                        console.log(req.responseText);
+                        printTable();
+                    } else {
+                        console.log("Something went wrong. Error: " + req.status + ".");
+                    }
+                });
+                req.send(JSON.stringify(payload)); 
+                
+                for(var i = 0; i < 5; i++){
+                    row.children[i].firstChild.setAttribute('readonly', 'readonly'); 
+                } 
+                button.name = "edit";
+                button.innerHTML= "Edit"; 
+                button.removeAttribute("id");
+            }
         }
-    }
+    });
+
 }
 
 /*
@@ -368,5 +376,6 @@ function handleNewExerciseEvent(){
 
 window.addEventListener("load", function(){
     printTable();
+    handleEditExercise();
     handleNewExerciseEvent();
    });
