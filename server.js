@@ -79,26 +79,6 @@ app.get("/get-list", function(req, res, next){
         });
 });
 
-/* Handler to reset table.
-app.get('/reset-table',function(req,res,next){
-    var context = {};
-    pool.query("DROP TABLE IF EXISTS workouts", function(err){
-        var createString = "CREATE TABLE workouts("+
-            "id INT PRIMARY KEY AUTO_INCREMENT,"+
-            "exercise VARCHAR(255) NOT NULL,"+
-            "reps INT,"+
-            "weight INT,"+
-            "date DATE,"+
-            "units BOOLEAN,"+
-            "name VARCHAR(255))";
-        pool.query(createString, function(err){
-            context.results = "Table reset";
-            res.render('index',context);
-        })
-    });
-});
-*/
-
 //Route handler for a new exercise record.
 app.post("/new", function(req, res){
     req.body.params.push(req.session.name);

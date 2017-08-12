@@ -295,21 +295,6 @@ function handleEditExercise(){
 
 }
 
-/*
-function resetTable(){
-    var resetReq = new XMLHttpRequest();
-    resetReq.open("GET", "/reset-table", true);
-    resetReq.addEventListener("load", function(){
-        if(resetReq.readyState == 4 && resetReq.status >=200 && resetReq.status < 400){
-            printTable();
-        } else {
-            console.log("Something isn't right. Error: " + req.status + ".");
-        }
-    });
-    resetReq.send(null);
-}
-*/
-
 /* function: handleDeleteExercise
  * params: event - click event tied to the button that call this function;
  * button - the button which this function is tied to
@@ -373,9 +358,8 @@ function handleNewExerciseEvent(){
 
 }
 
-
 window.addEventListener("load", function(){
     printTable();
     handleEditExercise();
     handleNewExerciseEvent();
-   });
+});
