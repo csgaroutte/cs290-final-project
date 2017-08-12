@@ -1,73 +1,74 @@
 "use strict";
 
-var express = require('express');
+var express = require("express");
 var app = express();
 
-var handlebars = require('express-handlebars').create({
+var handlebars = require("express-handlebars").create({
     defaultLayout: "main"
 });
-app.engine('handlebars', handlebars.engine);
-app.set('view engine', 'handlebars');
+app.engine("handlebars", handlebars.engine);
+app.set("view engine", "handlebars");
 
-var path = require('path');
-app.use(express.static(path.join(__dirname, 'public')));
+var path = require("path");
+app.use(express.static(path.join(__dirname, "public")));
 
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(bodyParser.json());
 
-var session = require('express-session');
+var session = require("express-session");
 app.use(session({
-    secret: 'CS290FinalProjectSecret',
+    secret: "CS290FinalProjectSecret",
     resave: true,
     saveUninitialized:true
 }));
 
-var mysql = require('mysql');
+var mysql = require("mysql");
 var pool = mysql.createPool({
     connectionLimit: 10,
-    host: 'classmysql.engr.oregonstate.edu',
-    user: 'cs290_garouttc',
-    password: 'RottenDrubs79',
-    database: 'cs290_garouttc'
+    host: "classmysql.engr.oregonstate.edu",
+    user: "cs290_garouttc",
+    password: "RottenDrubs79",
+    database: "cs290_garouttc"
 });
 
 
-app.set('port', 50918);
+app.set("port", 50918);
 
+//Route handler for GET requests to main page.
 app.get("/", function(req, res){
     var context = {};
     //If no session in progress, send to login page.
     if(!req.session.name){
-        context.script = 'js/loginScript.js';
-        context.style = 'css/loginStyle.css'
-        res.render('login', context);
+        context.style = "css/loginStyle.css"
+        res.render("login", context);
         return;
     }
     //If session in progress, send to their list.
     if(req.session.name){
-        context.script = 'js/script.js';
         context.name = req.session.name;
-        context.style = 'css/mainStyle.css';
-        res.render('index', context);
+        context.style = "css/mainStyle.css";
+        res.render("index", context);
     }
 });
 
-app.post('/', function(req, res){
-    if(req.body['loginName']){
-        req.session.name = req.body['loginName'];
+//Route handler for POST requests to main page. Sent from login page.
+app.post("/", function(req, res){
+    if(req.body["loginName"]){
+        req.session.name = req.body["loginName"];
         var context = {};
-        console.log(req.body['loginName'] + " logged in.");
-        context.name = req.body['loginName'];
-        context.script = 'js/script.js';
-        context.style = 'css/mainStyle.css';
-        res.render('index', context);
+        console.log(req.body["loginName"] + " logged in.");
+        context.name = req.body["loginName"];
+        context.script = "js/script.js";
+        context.style = "css/mainStyle.css";
+        res.render("index", context);
     }
 });
 
-app.get('/get-list', function(req, res, next){
+//Route handler to get and return records for a specific person.
+app.get("/get-list", function(req, res, next){
     pool.query('SELECT id, exercise, reps, weight, DATE_FORMAT(date, ' +
         '"%Y-%m-%d") as dateF, units from workouts where name="' + 
         req.session.name + '" ORDER BY date DESC', function(err, result, fields){
@@ -106,8 +107,8 @@ app.post("/new", function(req, res){
                if(err){
                    throw err;
                } 
-               console.log("Values " + result.insertId + ", " +
-               req.body.params + "succesfully inserted into table 'workouts'");
+               console.log("Record with id " + result.insertId +
+               " succesfully inserted into table 'workouts'");
                pool.query("SELECT id, exercise, reps, weight, DATE_FORMAT(date, " 
                        + "'%Y-%m-%d') as date, units FROM workouts WHERE id=" 
                        + result.insertId, function(err, result, field){
@@ -142,6 +143,20 @@ app.get("/delete", function(req, res){
         console.log("Record with id " + req.query.id + " deleted from table workouts.");
         res.send("OK");
     });
+});
+
+//Route handler for 404 error.
+app.use(function(req,res){
+    res.type('text/plain');
+    res.status(404);
+    res.send('404 - Not Found');
+});
+
+//Route handler for server error.
+app.use(function(err, req, res){
+    res.type('plain/text');
+    res.status(500);
+    res.send('500 - Server Error');
 });
 
 //Serve up the website.

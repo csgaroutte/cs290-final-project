@@ -1,5 +1,11 @@
 {
   "name": "CS290-Final-Project",
+  "version": "1.0.0",
+  "description": "Workout tracker completed for CS290.",
+  "people": {
+      "name": "Chris Garoutte",
+      "email": "garouttc@oregonstate.edu"
+  },
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3",

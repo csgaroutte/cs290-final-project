@@ -12,11 +12,11 @@
             pattern="^(?!\s*$)[A-Za-z\s]{1,255}$"
             oninput="this.setCustomValidity('')"
         >
-        Reps: <input required placeholder="Enter a number." 
+        Reps: <input class="numberIn" required placeholder="Enter a number." 
             type="number" min="0" max="50000" name="reps"
             oninput="this.setCustomValidity('')"
         >
-        Weight: <input required placeholder="Enter a number." 
+        Weight: <input class="numberIn" required placeholder="Enter a number." 
             type="number" min="0" max="50000" name="weight"
             oninput="this.setCustomValidity('')"
         >
@@ -48,3 +48,4 @@
     <footer>
     </footer>
 </div>
+<script src="js/script.js" rel="text/javascript"></script>
